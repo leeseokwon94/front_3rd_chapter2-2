@@ -3,11 +3,12 @@ import { describe, expect, test } from 'vitest';
 import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from '../../refactoring/components/AdminPage';
-import { Coupon, Product } from '../../types';
+import { CartItem, Coupon, Product } from '../../types';
 import { useCoupons, useProducts } from '../../refactoring/hooks';
 import { useNewProduct } from '../../refactoring/hooks/useNewProduct.ts';
 import { useEditingProduct } from '../../refactoring/hooks/useEditingProduct.ts';
 import { useNewCoupon } from '../../refactoring/hooks/useNewCoupon.ts';
+import { calculateItemTotal } from '../../refactoring/hooks/utils/cartUtils.ts';
 
 const mockProducts: Product[] = [
   {
@@ -309,6 +310,7 @@ describe('advanced > ', () => {
         discountValue: 10,
       },
     ];
+
     test('추가한 쿠폰이 잘 저장되는지 확인', () => {
       const { result: couponsResult } = renderHook(() => useCoupons(initialCoupons));
       const { result } = renderHook(() => useNewCoupon());
@@ -325,6 +327,38 @@ describe('advanced > ', () => {
       expect(couponsResult.current.coupons[2].code).toEqual(initialNewCoupon.code);
       expect(couponsResult.current.coupons[2].discountType).toEqual(initialNewCoupon.discountType);
       expect(couponsResult.current.coupons[2].discountValue).toEqual(initialNewCoupon.discountValue);
+    });
+  });
+
+  describe('cartUtil > ', () => {
+    const initialItem: CartItem = {
+      product: {
+        id: 'p1',
+        name: '상품1',
+        price: 10000,
+        stock: 20,
+        discounts: [
+          {
+            quantity: 10,
+            rate: 0.1,
+          },
+          {
+            quantity: 20,
+            rate: 0.2,
+          },
+        ],
+      },
+      quantity: 10,
+    };
+
+    let result = 0;
+
+    test('순수함수 calculateItemTotal 테스트', () => {
+      act(() => {
+        result = calculateItemTotal(initialItem);
+      });
+
+      expect(result).toEqual(90000);
     });
   });
 });

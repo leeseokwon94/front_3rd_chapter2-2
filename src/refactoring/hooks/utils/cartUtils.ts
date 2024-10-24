@@ -1,5 +1,8 @@
 import { CartItem, Coupon } from '../../../types';
 
+// calculate
+
+// 순수함수 추가
 export const calculateItemTotal = (item: CartItem) => {
   const { price } = item.product;
   const { quantity } = item;

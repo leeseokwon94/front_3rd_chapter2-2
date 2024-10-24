@@ -36,16 +36,16 @@ export const useCart = () => {
     setSelectedCoupon(coupon);
   };
 
+  const getRemainingStock = (product: Product) => {
+    const cartItem = cart.find((item) => item.product.id === product.id);
+    return product.stock - (cartItem?.quantity || 0);
+  };
+
   // Calculate
   const calculateTotal = () => calculateCartTotal(cart, selectedCoupon);
 
   const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
     return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-  };
-
-  const getRemainingStock = (product: Product) => {
-    const cartItem = cart.find((item) => item.product.id === product.id);
-    return product.stock - (cartItem?.quantity || 0);
   };
 
   const getAppliedDiscount = getMaxApplicableDiscount;
