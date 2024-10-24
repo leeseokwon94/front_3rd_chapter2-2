@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { CartItem, Coupon, Product } from '../../types.ts';
+import { Coupon, Product } from '../../types.ts';
 import { useCart } from '../hooks';
 
 interface Props {
@@ -20,6 +19,7 @@ export const CartPage = ({ products, coupons }: Props) => {
     getRemainingStock,
     getAppliedDiscount,
   } = useCart();
+
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
 
   return (
