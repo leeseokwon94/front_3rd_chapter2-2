@@ -4,9 +4,11 @@ import { CartItem, Coupon, Product } from '../../types';
 import { calculateCartTotal, getMaxApplicableDiscount, updateCartItemQuantity } from './utils/cartUtils';
 
 export const useCart = () => {
+  // State
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
+  // Action
   const addToCart = (product: Product) => {
     const remainingStock = getRemainingStock(product);
     if (remainingStock <= 0) return;
@@ -34,6 +36,7 @@ export const useCart = () => {
     setSelectedCoupon(coupon);
   };
 
+  // Calculate
   const calculateTotal = () => calculateCartTotal(cart, selectedCoupon);
 
   const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {

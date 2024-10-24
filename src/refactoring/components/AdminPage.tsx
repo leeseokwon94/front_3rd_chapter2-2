@@ -2,6 +2,7 @@ import { Coupon, Product } from '../../types.ts';
 import { useEditingProduct } from '../hooks/useEditingProduct.ts';
 import { useNewCoupon } from '../hooks/useNewCoupon.ts';
 import { NewProduct } from './NewProduct.tsx';
+import { useEffect } from 'react';
 
 interface Props {
   products: Product[];
@@ -18,13 +19,11 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
     newDiscount,
     setNewDiscount,
     toggleProductAccordion,
-    handleEditProduct,
-    handleProductNameUpdate,
-    handlePriceUpdate,
-    handleEditComplete,
-    handleStockUpdate,
-    handleAddDiscount,
-    handleRemoveDiscount,
+    updateEditProduct,
+    updateEditProductInput,
+    addEditProductDiscount,
+    removeEditProductDiscount,
+    completeEditProduct,
   } = useEditingProduct();
 
   const { newCoupon, setNewCoupon, handleAddCoupon } = useNewCoupon();
@@ -53,29 +52,30 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
                         <div className="mb-4">
                           <label className="block mb-1">상품명: </label>
                           <input
+                            name="name"
                             type="text"
                             value={editingProduct.name}
-                            onChange={(e) => handleProductNameUpdate(product.id, e.target.value)}
+                            onChange={(e) => updateEditProductInput(e.target.name, product.id, e.target.value)}
                             className="w-full p-2 border rounded"
                           />
                         </div>
                         <div className="mb-4">
                           <label className="block mb-1">가격: </label>
                           <input
+                            name="price"
                             type="number"
                             value={editingProduct.price}
-                            onChange={(e) => handlePriceUpdate(product.id, parseInt(e.target.value))}
+                            onChange={(e) => updateEditProductInput(e.target.name, product.id, e.target.value)}
                             className="w-full p-2 border rounded"
                           />
                         </div>
                         <div className="mb-4">
                           <label className="block mb-1">재고: </label>
                           <input
+                            name="stock"
                             type="number"
                             value={editingProduct.stock}
-                            onChange={(e) =>
-                              handleStockUpdate(products, product.id, parseInt(e.target.value), onProductUpdate)
-                            }
+                            onChange={(e) => updateEditProductInput(e.target.name, product.id, e.target.value)}
                             className="w-full p-2 border rounded"
                           />
                         </div>
@@ -88,7 +88,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
                                 {discount.quantity}개 이상 구매 시 {discount.rate * 100}% 할인
                               </span>
                               <button
-                                onClick={() => handleRemoveDiscount(products, product.id, index, onProductUpdate)}
+                                onClick={() => removeEditProductDiscount(products, product.id, index, onProductUpdate)}
                                 className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                               >
                                 삭제
@@ -111,7 +111,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
                               className="w-1/3 p-2 border rounded"
                             />
                             <button
-                              onClick={() => handleAddDiscount(products, product.id, onProductUpdate)}
+                              onClick={() => addEditProductDiscount(products, product.id, onProductUpdate)}
                               className="w-1/3 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
                             >
                               할인 추가
@@ -119,7 +119,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
                           </div>
                         </div>
                         <button
-                          onClick={() => handleEditComplete(onProductUpdate)}
+                          onClick={() => completeEditProduct(onProductUpdate)}
                           className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 mt-2"
                         >
                           수정 완료
@@ -136,7 +136,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
                         ))}
                         <button
                           data-testid="modify-button"
-                          onClick={() => handleEditProduct(product)}
+                          onClick={() => updateEditProduct(product)}
                           className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 mt-2"
                         >
                           수정
