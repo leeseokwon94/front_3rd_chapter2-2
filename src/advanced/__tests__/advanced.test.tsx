@@ -8,7 +8,7 @@ import { useCoupons, useProducts } from '../../refactoring/hooks';
 import { useNewProduct } from '../../refactoring/hooks/useNewProduct.ts';
 import { useEditingProduct } from '../../refactoring/hooks/useEditingProduct.ts';
 import { useNewCoupon } from '../../refactoring/hooks/useNewCoupon.ts';
-import { calculateItemTotal } from '../../refactoring/hooks/utils/cartUtils.ts';
+import { applyCouponDiscount, calculateItemTotal } from '../../refactoring/hooks/utils/cartUtils.ts';
 
 const mockProducts: Product[] = [
   {
@@ -331,34 +331,51 @@ describe('advanced > ', () => {
   });
 
   describe('cartUtil > ', () => {
-    const initialItem: CartItem = {
-      product: {
-        id: 'p1',
-        name: '상품1',
-        price: 10000,
-        stock: 20,
-        discounts: [
-          {
-            quantity: 10,
-            rate: 0.1,
-          },
-          {
-            quantity: 20,
-            rate: 0.2,
-          },
-        ],
-      },
-      quantity: 10,
-    };
-
-    let result = 0;
-
     test('순수함수 calculateItemTotal 테스트', () => {
+      const initialItem: CartItem = {
+        product: {
+          id: 'p1',
+          name: '상품1',
+          price: 10000,
+          stock: 20,
+          discounts: [
+            {
+              quantity: 10,
+              rate: 0.1,
+            },
+            {
+              quantity: 20,
+              rate: 0.2,
+            },
+          ],
+        },
+        quantity: 10,
+      };
+
+      let result = 0;
+
       act(() => {
         result = calculateItemTotal(initialItem);
       });
 
       expect(result).toEqual(90000);
+    });
+
+    test('순수함수 applyCouponDiscount 테스트', () => {
+      const initialCoupon: Coupon = {
+        name: '5000원 할인 쿠폰',
+        code: 'AMOUNT5000',
+        discountType: 'amount',
+        discountValue: 5000,
+      };
+
+      let result = 0;
+
+      act(() => {
+        result = applyCouponDiscount(20000, initialCoupon);
+      });
+
+      expect(result).toEqual(20000 - initialCoupon.discountValue);
     });
   });
 });

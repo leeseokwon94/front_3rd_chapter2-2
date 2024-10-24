@@ -17,6 +17,15 @@ export const calculateItemTotal = (item: CartItem) => {
   return itemTotal;
 };
 
+// 순수함수 추가
+export const applyCouponDiscount = (total: number, coupon: Coupon) => {
+  if (coupon.discountType === 'amount') {
+    return Math.max(0, total - coupon.discountValue);
+  }
+
+  return total * (1 - coupon.discountValue / 100);
+};
+
 export const getMaxApplicableDiscount = (item: CartItem) => {
   const { discounts } = item.product;
   const { quantity } = item;
@@ -45,11 +54,7 @@ export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | nu
 
   // 쿠폰 적용
   if (selectedCoupon) {
-    if (selectedCoupon.discountType === 'amount') {
-      totalAfterDiscount = Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
-    } else {
-      totalAfterDiscount *= 1 - selectedCoupon.discountValue / 100;
-    }
+    totalAfterDiscount = applyCouponDiscount(totalAfterDiscount, selectedCoupon);
     totalDiscount = totalBeforeDiscount - totalAfterDiscount;
   }
 
