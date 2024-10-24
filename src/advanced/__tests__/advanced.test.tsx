@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { beforeEach, describe, expect, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from '../../refactoring/components/AdminPage';
 import { Coupon, Product } from '../../types';
-import { useCart, useProducts } from '../../refactoring/hooks';
+import { useCoupons, useProducts } from '../../refactoring/hooks';
 import { useNewProduct } from '../../refactoring/hooks/useNewProduct.ts';
 import { useEditingProduct } from '../../refactoring/hooks/useEditingProduct.ts';
+import { useNewCoupon } from '../../refactoring/hooks/useNewCoupon.ts';
 
 const mockProducts: Product[] = [
   {
@@ -284,6 +285,46 @@ describe('advanced > ', () => {
       });
 
       expect(returnValue.name).toEqual('test product name');
+    });
+  });
+
+  describe('useNewCoupon > ', () => {
+    const initialNewCoupon: Coupon = {
+      name: 'test Coupon',
+      code: 'A1',
+      discountType: 'percentage',
+      discountValue: 10,
+    };
+    const initialCoupons: Coupon[] = [
+      {
+        name: '5000원 할인 쿠폰',
+        code: 'AMOUNT5000',
+        discountType: 'amount',
+        discountValue: 5000,
+      },
+      {
+        name: '10% 할인 쿠폰',
+        code: 'PERCENT10',
+        discountType: 'percentage',
+        discountValue: 10,
+      },
+    ];
+    test('추가한 쿠폰이 잘 저장되는지 확인', () => {
+      const { result: couponsResult } = renderHook(() => useCoupons(initialCoupons));
+      const { result } = renderHook(() => useNewCoupon());
+
+      act(() => {
+        result.current.setNewCoupon(initialNewCoupon);
+      });
+
+      act(() => {
+        result.current.handleAddCoupon(couponsResult.current.addCoupon);
+      });
+
+      expect(couponsResult.current.coupons[2].name).toEqual(initialNewCoupon.name);
+      expect(couponsResult.current.coupons[2].code).toEqual(initialNewCoupon.code);
+      expect(couponsResult.current.coupons[2].discountType).toEqual(initialNewCoupon.discountType);
+      expect(couponsResult.current.coupons[2].discountValue).toEqual(initialNewCoupon.discountValue);
     });
   });
 });
